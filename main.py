@@ -153,20 +153,32 @@ elif choice == "2":
     failed_patterns = []
    
     for pattern_name, pattern_info in patterns.items():
-        size = pattern_name.split("_")[1]
-        filter_key = "size_" + size
+        try:
+            parts = pattern_name.split("_")
 
-        filter_cross = filters[filter_key]["cross"]
-        filter_x = filters[filter_key]["x"]
+            if len(parts) != 3 or parts[0] != "size":
+                raise ValueError("패턴 이름 형식 오류")
 
-        pattern = pattern_info["input"]
+            size = int(parts[1])
 
-        if not (
-            validate_matrix(pattern, int(size))
-            and validate_matrix(filter_cross, int(size))
-            and validate_matrix(filter_x, int(size))
-        ):
-            reason = "행렬 크기 또는 데이터 형식 오류"
+            if size <= 0:
+                raise ValueError("잘못된 행렬 크기")
+
+            filter_key = "size_" + str(size)
+
+            filter_cross = filters[filter_key]["cross"]
+            filter_x = filters[filter_key]["x"]
+            pattern = pattern_info["input"]
+
+            if not (
+                validate_matrix(pattern, size)
+                and validate_matrix(filter_cross, size)
+                and validate_matrix(filter_x, size)
+            ):
+                raise ValueError("행렬 크기 또는 데이터 형식 오류")
+
+        except (KeyError, TypeError, ValueError, IndexError) as error:
+            reason = str(error)
             print(f"패턴 이름: {pattern_name}")
             print(f"검증 결과: FAIL ({reason})")
             print("--------------------")
@@ -174,6 +186,8 @@ elif choice == "2":
             fail_count += 1
             failed_patterns.append(pattern_name)
             continue
+
+
 
         score_cross = calculate_mac(pattern, filter_cross)
 
@@ -194,7 +208,7 @@ elif choice == "2":
 
 
         print("패턴 이름:", pattern_name)
-        print("필터 크기:", size + "x" + size)
+        print("필터 크기:", f"{size}x{size}")
         print("MAC 곱셈 횟수:", int(size) ** 2)
         print("기대 정답:", pattern_info["expected"])
         print("십자가 점수:", score_cross)

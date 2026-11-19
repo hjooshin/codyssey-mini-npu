@@ -166,9 +166,14 @@ elif choice == "2":
             and validate_matrix(filter_cross, int(size))
             and validate_matrix(filter_x, int(size))
         ):
-            print("오류: 행렬 크기 또는 데이터 형식이 올바르지 않습니다.")
-            print("문제가 있는 패턴:", pattern_name)
-            raise SystemExit
+            reason = "행렬 크기 또는 데이터 형식 오류"
+            print(f"패턴 이름: {pattern_name}")
+            print(f"검증 결과: FAIL ({reason})")
+            print("--------------------")
+
+            fail_count += 1
+            failed_patterns.append(pattern_name)
+            continue
 
         score_cross = calculate_mac(pattern, filter_cross)
 

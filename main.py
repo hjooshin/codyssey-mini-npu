@@ -1,6 +1,18 @@
 import time
 import json
 
+def normalize_label(label):
+    mapping = {
+        "+": "Cross",
+        "cross": "Cross",
+        "x": "X"
+    }
+
+    if not isinstance(label, str):
+        return label
+
+    return mapping.get(label.strip().lower(), label)
+
 def calculate_mac(pattern, filter_data):
     score = 0
 
@@ -215,16 +227,8 @@ elif choice == "2":
         print("X 점수:", score_x)
         print("십자가 평균 시간:", f"{time_cross:.6f}", "ms")
         print("X 평균 시간:", f"{time_x:.6f}", "ms")
-        
+        expected = normalize_label(pattern_info["expected"])
 
-        expected = pattern_info["expected"]
-
-        if expected == "+":
-            expected = "Cross"
-        elif expected.lower() == "x":
-            expected = "X"
-
-       
         if prediction == expected:
             result = "PASS"
             pass_count += 1
